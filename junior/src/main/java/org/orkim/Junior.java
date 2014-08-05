@@ -30,8 +30,6 @@ public class Junior {
         startRestServer(workerPort);
         registerInZookeeper(workerPort);
 
-        // TODO logger
-        System.out.println("Worker " + workerName + " started on port $workerPort");
     }
 
     private static void startRestServer(Integer workerPort) {
@@ -77,7 +75,7 @@ public class Junior {
     @Path("/go")
     public String go() {
         //TODO logger
-        System.out.println("Go go go!");
+        System.out.println(workerName + ": Go go go!");
         return "Finished";
     }
 
