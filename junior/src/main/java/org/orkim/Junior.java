@@ -7,6 +7,8 @@ import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.UriSpec;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,6 +19,8 @@ public class Junior {
     private static String workerName;
     private static Integer workerPort;
     private static UndertowJaxrsServer server;
+
+    private static Logger log = LoggerFactory.getLogger(Junior.class);
 
     public static void main(String[] args) {
 
@@ -51,8 +55,7 @@ public class Junior {
                     .name("junior")
                     .build();
         } catch (Exception e) {
-            // TODO logger
-            System.out.println("Could not create Service Instance.");
+            log.error("Could not create Service Instance.");
             return;
         }
 
@@ -65,8 +68,7 @@ public class Junior {
                     .build()
                     .start();
         } catch (Exception e) {
-            // TODO logger
-            System.out.println("Could not start Service Discovery.");
+            log.error("Could not start Service Discovery.");
             return;
         }
     }
@@ -74,8 +76,7 @@ public class Junior {
     @GET
     @Path("/go")
     public String go() {
-        //TODO logger
-        System.out.println(workerName + ": Go go go!");
+        log.info(workerName + ": Go go go!");
         return "Finished";
     }
 

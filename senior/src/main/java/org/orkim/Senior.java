@@ -7,15 +7,15 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceProvider;
-import org.apache.curator.x.discovery.UriSpec;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 @Path("/services")
@@ -24,6 +24,8 @@ public class Senior {
     private static Integer delegatePort;
     private static UndertowJaxrsServer server;
     private static ServiceProvider serviceProvider;
+
+    private static Logger log = LoggerFactory.getLogger(Senior.class);
 
     public static void main(String[] args) {
 
@@ -56,8 +58,7 @@ public class Senior {
         try {
             serviceDiscovery.start();
         } catch (Exception e) {
-            //TODO logger
-            System.out.println("Discovery failed.");
+            log.error("Discovery failed.");
             return;
         }
 
@@ -66,12 +67,10 @@ public class Senior {
         try {
             serviceProvider.start();
         } catch (Exception e) {
-            //TODO logger
-            System.out.println("Provider failed.");
+            log.error("Provider failed.");
             return;
         }
-        //TODO logger
-        System.out.println("Delegate started on port " + delegatePort);
+        log.info("Delegate started on port " + delegatePort);
     }
 
     @GET
@@ -83,8 +82,7 @@ public class Senior {
         try {
             instance = serviceProvider.getInstance();
         } catch (Exception e) {
-            //TODO logger
-            System.out.println("Could not find service instance.");
+            log.error("Could not find service instance.");
             return "";
         }
 
@@ -96,13 +94,11 @@ public class Senior {
          response = in.readLine();
 
         } catch (IOException exception) {
-            // todo logger
-            System.out.println("Could not read from url: " + address);
+            log.error("Could not read from url: " + address);
             return "";
         }
 
-        //TODO logger
-        System.out.println("Call call call: " + response);
+        log.error("Call call call: " + response);
         return response;
     }
 }
