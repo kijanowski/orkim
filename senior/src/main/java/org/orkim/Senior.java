@@ -7,6 +7,7 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.ServiceProvider;
+import org.apache.curator.x.discovery.strategies.RoundRobinStrategy;
 import org.jboss.resteasy.plugins.server.undertow.UndertowJaxrsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,10 @@ public class Senior {
             return;
         }
 
-        serviceProvider = serviceDiscovery.serviceProviderBuilder().serviceName("junior").build();
+        serviceProvider = serviceDiscovery.serviceProviderBuilder()
+                .serviceName("junior")
+                .providerStrategy(new RoundRobinStrategy<>())
+                .build();
 
         try {
             serviceProvider.start();
