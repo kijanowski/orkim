@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/services")
 public class Senior {
@@ -37,7 +37,7 @@ public class Senior {
         delegatePort = Integer.parseInt(args[0]);
 
         startRestServer(delegatePort);
-        discoverInZookeeper(delegatePort);
+        discoverInZookeeper();
 
     }
 
@@ -47,7 +47,7 @@ public class Senior {
         server.deploy(SeniorService.class);
     }
 
-    private static void discoverInZookeeper(Integer workerPort) {
+    private static void discoverInZookeeper() {
         CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient("localhost:2181", new RetryNTimes(5, 1000));
         curatorFramework.start();
 
@@ -92,17 +92,17 @@ public class Senior {
 
 
         String address = instance.buildUriSpec();
-        String response;
-        try(BufferedReader in = new BufferedReader(
-                new InputStreamReader(new URL(address + "/junior/services/go").openStream()))) {
-         response = in.readLine();
+        Client client = ClientBuilder.newClient();
 
-        } catch (IOException exception) {
-            log.error("Could not read from url: " + address);
-            return "";
-        }
-
-        log.error("Call call call: " + response);
-        return response;
+        Response response = client.target(address)
+                .path("/junior/services/go")
+                //.queryParam("greeting", "Hi World!")
+                .request(MediaType.TEXT_HTML)
+                //.header("some-header", "true")
+                .get(Response.class);
+        log.debug("Gor response with status: " + response.getStatus());
+        String output = response.readEntity(String.class);
+        log.info("Call call call: " + output);
+        return output;
     }
 }
